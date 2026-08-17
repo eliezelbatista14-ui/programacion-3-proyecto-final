@@ -134,6 +134,47 @@ def vestidos():
         vestidos=vestidos
     )
 
+@app.route("/vestidos/editar/<int:id>", methods=["GET", "POST"])
+def editar_vestido(id):
+
+    conexion = conectar_db()
+
+    if request.method == "POST":
+
+        nombre = request.form["nombre"]
+        descripcion = request.form["descripcion"]
+        precio = request.form["precio"]
+        estado = request.form["estado"]
+
+        conexion.execute(
+            """
+            UPDATE vestidos
+            SET nombre = ?, descripcion = ?, precio = ?, estado = ?
+            WHERE id = ?
+            """,
+            (nombre, descripcion, precio, estado, id)
+        )
+
+        conexion.commit()
+        conexion.close()
+
+        return redirect("/vestidos")
+
+    vestido = conexion.execute(
+        """
+        SELECT * FROM vestidos
+        WHERE id = ?
+        """,
+        (id,)
+    ).fetchone()
+
+    conexion.close()
+
+    return render_template(
+        "editar_vestido.html",
+        vestido=vestido
+    )
+
 
 @app.route("/disponibilidad")
 def disponibilidad():

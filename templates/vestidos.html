@@ -77,15 +77,25 @@
 
             {% for vestido in vestidos %}
 
-            <tr>
+                <tr>
 
-                <td>{{ vestido[0] }}</td>
-                <td>{{ vestido[1] }}</td>
-                <td>{{ vestido[2] }}</td>
-                <td>{{ vestido[3] }}</td>
-                <td>{{ vestido[4] }}</td>
-         
-            </tr>
+                    <td>{{ vestido[0] }}</td>
+
+                    <td>{{ vestido[1] }}</td>
+
+                    <td>{{ vestido[2] }}</td>
+
+                    <td>{{ vestido[3] }}</td>
+
+                    <td>{{ vestido[4] }}</td>
+
+                    <td>
+                        <a href="/vestidos/editar/{{ vestido[0] }}">
+                            Editar
+                        </a>
+                    </td>
+
+                </tr>
 
             {% endfor %}
 
