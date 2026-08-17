@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reservas</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <h1>Gestión de Reservas</h1>
+
+    <form action="/reservas" method="POST">
+
+        <label>Cliente:</label>
+
+        <select name="cliente_id" required>
+
+            <option value="">
+                Seleccionar cliente
+            </option>
+
+            {% for cliente in clientes %}
+
+            <option value="{{ cliente[0] }}">
+                {{ cliente[1] }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <label>Vestido:</label>
+
+        <select name="vestido_id" required>
+
+            <option value="">
+                Seleccionar vestido
+            </option>
+
+            {% for vestido in vestidos %}
+
+            <option value="{{ vestido[0] }}">
+                {{ vestido[1] }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <label>Fecha:</label>
+
+        <input
+            type="date"
+            name="fecha"
+            required
+        >
+
+
+        <button type="submit">
+            Registrar reserva
+        </button>
+
+    </form>
+
+
+    <h2>Reservas registradas</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Vestido</th>
+                <th>Fecha</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for reserva in reservas %}
+
+            <tr>
+                <td>{{ reserva[0] }}</td>
+                <td>{{ reserva[1] }}</td>
+                <td>{{ reserva[2] }}</td>
+                <td>{{ reserva[3] }}</td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</body>
+
+</html>
