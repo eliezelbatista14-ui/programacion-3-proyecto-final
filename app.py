@@ -207,7 +207,55 @@ def reservas():
         vestidos=vestidos,
         reservas=reservas
     )
+@app.route("/reservas/editar/<int:id>", methods=["GET", "POST"])
+def editar_reserva(id):
 
+    conexion = conectar_db()
+
+    if request.method == "POST":
+
+        cliente_id = request.form["cliente_id"]
+        vestido_id = request.form["vestido_id"]
+        fecha = request.form["fecha"]
+
+        conexion.execute(
+            """
+            UPDATE reservas
+            SET cliente_id = ?, vestido_id = ?, fecha = ?
+            WHERE id = ?
+            """,
+            (cliente_id, vestido_id, fecha, id)
+        )
+
+        conexion.commit()
+        conexion.close()
+
+        return redirect("/reservas")
+
+    reserva = conexion.execute(
+        """
+        SELECT * FROM reservas
+        WHERE id = ?
+        """,
+        (id,)
+    ).fetchone()
+
+    clientes = conexion.execute(
+        "SELECT * FROM clientes"
+    ).fetchall()
+
+    vestidos = conexion.execute(
+        "SELECT * FROM vestidos"
+    ).fetchall()
+
+    conexion.close()
+
+    return render_template(
+        "editar_reserva.html",
+        reserva=reserva,
+        clientes=clientes,
+        vestidos=vestidos
+    )
 
 if __name__ == "__main__":
     crear_tabla()

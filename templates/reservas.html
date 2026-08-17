@@ -82,6 +82,7 @@
                 <th>Cliente</th>
                 <th>Vestido</th>
                 <th>Fecha</th>
+                <th>Acciones</th>
             </tr>
 
         </thead>
@@ -96,6 +97,12 @@
                 <td>{{ reserva[2] }}</td>
                 <td>{{ reserva[3] }}</td>
             </tr>
+
+            <td>
+                <a href="/reservas/editar/{{ reserva[0] }}">
+                    Editar
+                </a>
+            </td>
 
             {% endfor %}
 
