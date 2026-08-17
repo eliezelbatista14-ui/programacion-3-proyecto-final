@@ -120,6 +120,34 @@ def vestidos():
         vestidos=vestidos
     )
 
+@app.route("/disponibilidad")
+def disponibilidad():
+
+    estado = request.args.get("estado", "")
+
+    conexion = conectar_db()
+
+    if estado:
+        vestidos = conexion.execute(
+            """
+            SELECT * FROM vestidos
+            WHERE estado = ?
+            """,
+            (estado,)
+        ).fetchall()
+    else:
+        vestidos = conexion.execute(
+            "SELECT * FROM vestidos"
+        ).fetchall()
+
+    conexion.close()
+
+    return render_template(
+        "disponibilidad.html",
+        vestidos=vestidos,
+        estado=estado
+    )
+
 if __name__ == "__main__":
     crear_tabla()
     app.run(debug=True)
