@@ -100,6 +100,32 @@ def registrar_cliente():
     return redirect("/")
 
 
+@app.route("/clientes/eliminar/<int:id>", methods=["POST"])
+def eliminar_cliente(id):
+
+    conexion = conectar_db()
+
+    # Verificar si el cliente tiene reservas
+    reserva = conexion.execute(
+        "SELECT id FROM reservas WHERE cliente_id = ?",
+        (id,)
+    ).fetchone()
+
+    if reserva:
+        conexion.close()
+        return redirect("/")
+
+    # Eliminar cliente
+    conexion.execute(
+        "DELETE FROM clientes WHERE id = ?",
+        (id,)
+    )
+
+    conexion.commit()
+    conexion.close()
+
+    return redirect("/")
+
 @app.route("/vestidos", methods=["GET", "POST"])
 def vestidos():
 

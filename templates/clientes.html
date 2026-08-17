@@ -1,35 +1,38 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Clientes</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}
+Clientes
+{% endblock %}
 
-    <h1>Gestión de Clientes</h1>
+{% block content %}
 
-    <form action="/clientes" method="POST">
+<h1>Gestión de Clientes</h1>
 
-        <input type="text" name="nombre" placeholder="Nombre" required>
+<form action="/clientes" method="POST">
 
-        <input type="text" name="telefono" placeholder="Teléfono" required>
+    <label>Nombre:</label>
+    <input type="text" name="nombre" required>
 
-        <input type="email" name="correo" placeholder="Correo">
+    <label>Teléfono:</label>
+    <input type="text" name="telefono" required>
 
-        <button type="submit">
-            Registrar cliente
-        </button>
+    <label>Correo:</label>
+    <input type="email" name="correo">
 
-    </form>
+    <button type="submit">
+        Registrar cliente
+    </button>
 
-    <form action="/" method="GET">
+</form>
+
+<h2>Clientes registrados</h2>
+
+<form method="GET" action="/">
 
     <input
         type="text"
         name="busqueda"
-        placeholder="Buscar por nombre o teléfono"
+        placeholder="Buscar cliente"
         value="{{ busqueda }}"
     >
 
@@ -39,33 +42,40 @@
 
 </form>
 
-    <h2>Clientes registrados</h2>
+<table>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Correo</th>
-            </tr>
-        </thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Teléfono</th>
+        <th>Correo</th>
+        <th>Acciones</th>
+    </tr>
 
-        <tbody>
+    {% for cliente in clientes %}
 
-            {% for cliente in clientes %}
+    <tr>
 
-            <tr>
-                <td>{{ cliente[0] }}</td>
-                <td>{{ cliente[1] }}</td>
-                <td>{{ cliente[2] }}</td>
-                <td>{{ cliente[3] }}</td>
-            </tr>
+        <td>{{ cliente[0] }}</td>
+        <td>{{ cliente[1] }}</td>
+        <td>{{ cliente[2] }}</td>
+        <td>{{ cliente[3] }}</td>
 
-            {% endfor %}
+        <td>
+            <form
+                action="/clientes/eliminar/{{ cliente[0] }}"
+                method="POST"
+            >
+                <button type="submit">
+                    Eliminar
+                </button>
+            </form>
+        </td>
 
-        </tbody>
-    </table>
+    </tr>
 
-</body>
-</html>
+    {% endfor %}
+
+</table>
+
+{% endblock %}
