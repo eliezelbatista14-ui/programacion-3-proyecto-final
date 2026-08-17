@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Disponibilidad de Vestidos</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <h1>Disponibilidad de Vestidos</h1>
+
+    <form action="/disponibilidad" method="GET">
+
+        <label>Estado:</label>
+
+        <select name="estado">
+
+            <option value="">
+                Todos
+            </option>
+
+            <option
+                value="Disponible"
+                {% if estado == "Disponible" %}selected{% endif %}
+            >
+                Disponible
+            </option>
+
+            <option
+                value="No disponible"
+                {% if estado == "No disponible" %}selected{% endif %}
+            >
+                No disponible
+            </option>
+
+        </select>
+
+        <button type="submit">
+            Consultar
+        </button>
+
+    </form>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Vestido</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Estado</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for vestido in vestidos %}
+
+            <tr>
+
+                <td>{{ vestido[0] }}</td>
+                <td>{{ vestido[1] }}</td>
+                <td>{{ vestido[2] }}</td>
+                <td>{{ vestido[3] }}</td>
+                <td>{{ vestido[4] }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</body>
+
+</html>

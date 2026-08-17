@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vestidos</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <h1>Gestión de Vestidos</h1>
+
+    <form action="/vestidos" method="POST">
+
+        <input
+            type="text"
+            name="nombre"
+            placeholder="Nombre del vestido"
+            required
+        >
+
+        <input
+            type="text"
+            name="descripcion"
+            placeholder="Descripción"
+        >
+
+        <input
+            type="number"
+            name="precio"
+            placeholder="Precio"
+            step="0.01"
+            min="0"
+            required
+        >
+
+        <select name="estado" required>
+
+            <option value="Disponible">
+                Disponible
+            </option>
+
+            <option value="No disponible">
+                No disponible
+            </option>
+
+        </select>
+
+        <button type="submit">
+            Registrar vestido
+        </button>
+
+    </form>
+
+    <h2>Vestidos registrados</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Estado</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for vestido in vestidos %}
+
+            <tr>
+
+                <td>{{ vestido[0] }}</td>
+                <td>{{ vestido[1] }}</td>
+                <td>{{ vestido[2] }}</td>
+                <td>{{ vestido[3] }}</td>
+                <td>{{ vestido[4] }}</td>
+         
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</body>
+
+</html>
