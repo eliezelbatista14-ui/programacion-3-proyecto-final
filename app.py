@@ -31,6 +31,16 @@ def crear_tabla():
             estado TEXT NOT NULL
         )
     """)
+    conexion.execute("""
+    CREATE TABLE IF NOT EXISTS reservas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER NOT NULL,
+        vestido_id INTEGER NOT NULL,
+        fecha TEXT NOT NULL,
+        FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+        FOREIGN KEY (vestido_id) REFERENCES vestidos(id)
+    )
+    """)
 
     conexion.commit()
     conexion.close()
@@ -148,6 +158,60 @@ def disponibilidad():
         estado=estado
     )
 
+@app.route("/reservas", methods=["GET", "POST"])
+def reservas():
+
+    conexion = conectar_db()
+
+    if request.method == "POST":
+
+        cliente_id = request.form["cliente_id"]
+        vestido_id = request.form["vestido_id"]
+        fecha = request.form["fecha"]
+
+        conexion.execute(
+            """
+            INSERT INTO reservas
+            (cliente_id, vestido_id, fecha)
+            VALUES (?, ?, ?)
+            """,
+            (cliente_id, vestido_id, fecha)
+        )
+
+        conexion.commit()
+
+    clientes = conexion.execute(
+        "SELECT * FROM clientes"
+    ).fetchall()
+
+    vestidos = conexion.execute(
+        "SELECT * FROM vestidos WHERE estado = 'Disponible'"
+    ).fetchall()
+
+    reservas = conexion.execute("""
+        SELECT
+            reservas.id,
+            clientes.nombre,
+            vestidos.nombre,
+            reservas.fecha
+        FROM reservas
+        JOIN clientes ON reservas.cliente_id = clientes.id
+        JOIN vestidos ON reservas.vestido_id = vestidos.id
+    """).fetchall()
+
+    conexion.close()
+
+    return render_template(
+        "reservas.html",
+        clientes=clientes,
+        vestidos=vestidos,
+        reservas=reservas
+    )
+
+
+if __name__ == "__main__":
+    crear_tabla()
+    app.run(debug=True)
 if __name__ == "__main__":
     crear_tabla()
     app.run(debug=True)
