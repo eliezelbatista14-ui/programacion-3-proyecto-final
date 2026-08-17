@@ -316,6 +316,24 @@ def cancelar_reserva(id):
 
     return redirect("/reservas")
 
+@app.route("/reservas/eliminar/<int:id>", methods=["POST"])
+def eliminar_reserva(id):
+
+    conexion = conectar_db()
+
+    conexion.execute(
+        """
+        DELETE FROM reservas
+        WHERE id = ? AND estado = 'Cancelada'
+        """,
+        (id,)
+    )
+
+    conexion.commit()
+    conexion.close()
+
+    return redirect("/reservas")
+
 
 if __name__ == "__main__":
     crear_tabla()
