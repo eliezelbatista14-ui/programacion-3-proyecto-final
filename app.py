@@ -22,6 +22,16 @@ def crear_tabla():
         )
     """)
 
+    conexion.execute("""
+        CREATE TABLE IF NOT EXISTS vestidos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            descripcion TEXT,
+            precio REAL NOT NULL,
+            estado TEXT NOT NULL
+        )
+    """)
+
     conexion.commit()
     conexion.close()
 
@@ -76,6 +86,39 @@ def registrar_cliente():
 
     return redirect("/")
 
+@app.route("/vestidos", methods=["GET", "POST"])
+def vestidos():
+
+    conexion = conectar_db()
+
+    if request.method == "POST":
+
+        nombre = request.form["nombre"]
+        descripcion = request.form["descripcion"]
+        precio = request.form["precio"]
+        estado = request.form["estado"]
+
+        conexion.execute(
+            """
+            INSERT INTO vestidos
+            (nombre, descripcion, precio, estado)
+            VALUES (?, ?, ?, ?)
+            """,
+            (nombre, descripcion, precio, estado)
+        )
+
+        conexion.commit()
+
+    vestidos = conexion.execute(
+        "SELECT * FROM vestidos"
+    ).fetchall()
+
+    conexion.close()
+
+    return render_template(
+        "vestidos.html",
+        vestidos=vestidos
+    )
 
 if __name__ == "__main__":
     crear_tabla()
