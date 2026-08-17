@@ -180,6 +180,8 @@ def reservas():
 
         conexion.commit()
 
+    busqueda = request.args.get("busqueda", "")
+
     clientes = conexion.execute(
         "SELECT * FROM clientes"
     ).fetchall()
@@ -188,16 +190,40 @@ def reservas():
         "SELECT * FROM vestidos WHERE estado = 'Disponible'"
     ).fetchall()
 
-    reservas = conexion.execute("""
-        SELECT
-            reservas.id,
-            clientes.nombre,
-            vestidos.nombre,
-            reservas.fecha
-        FROM reservas
-        JOIN clientes ON reservas.cliente_id = clientes.id
-        JOIN vestidos ON reservas.vestido_id = vestidos.id
-    """).fetchall()
+    if busqueda:
+
+        reservas = conexion.execute(
+            """
+            SELECT
+                reservas.id,
+                clientes.nombre,
+                vestidos.nombre,
+                reservas.fecha
+            FROM reservas
+            JOIN clientes
+                ON reservas.cliente_id = clientes.id
+            JOIN vestidos
+                ON reservas.vestido_id = vestidos.id
+            WHERE clientes.nombre LIKE ?
+            OR reservas.fecha LIKE ?
+            """,
+            (f"%{busqueda}%", f"%{busqueda}%")
+        ).fetchall()
+
+    else:
+
+        reservas = conexion.execute("""
+            SELECT
+                reservas.id,
+                clientes.nombre,
+                vestidos.nombre,
+                reservas.fecha
+            FROM reservas
+            JOIN clientes
+                ON reservas.cliente_id = clientes.id
+            JOIN vestidos
+                ON reservas.vestido_id = vestidos.id
+        """).fetchall()
 
     conexion.close()
 
@@ -205,7 +231,8 @@ def reservas():
         "reservas.html",
         clientes=clientes,
         vestidos=vestidos,
-        reservas=reservas
+        reservas=reservas,
+        busqueda=busqueda
     )
 
 

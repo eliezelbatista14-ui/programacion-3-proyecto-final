@@ -73,6 +73,21 @@
 
     <h2>Reservas registradas</h2>
 
+    <form action="/reservas" method="GET">
+
+    <input
+        type="text"
+        name="busqueda"
+        placeholder="Buscar por cliente o fecha"
+        value="{{ busqueda }}"
+    >
+
+    <button type="submit">
+        Buscar
+    </button>
+
+    </form>
+
     <table>
 
         <thead>
