@@ -28,16 +28,31 @@ def crear_tabla():
 
 @app.route("/")
 def inicio():
+
+    busqueda = request.args.get("busqueda", "")
+
     conexion = conectar_db()
 
-    clientes = conexion.execute(
-        "SELECT * FROM clientes"
-    ).fetchall()
+    if busqueda:
+        clientes = conexion.execute(
+            """
+            SELECT * FROM clientes
+            WHERE nombre LIKE ? OR telefono LIKE ?
+            """,
+            (f"%{busqueda}%", f"%{busqueda}%")
+        ).fetchall()
+    else:
+        clientes = conexion.execute(
+            "SELECT * FROM clientes"
+        ).fetchall()
 
     conexion.close()
 
-    return render_template("clientes.html", clientes=clientes)
-
+    return render_template(
+        "clientes.html",
+        clientes=clientes,
+        busqueda=busqueda
+    )
 
 @app.route("/clientes", methods=["POST"])
 def registrar_cliente():
