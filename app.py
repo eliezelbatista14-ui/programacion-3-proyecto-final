@@ -31,15 +31,17 @@ def crear_tabla():
             estado TEXT NOT NULL
         )
     """)
+
     conexion.execute("""
-    CREATE TABLE IF NOT EXISTS reservas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        cliente_id INTEGER NOT NULL,
-        vestido_id INTEGER NOT NULL,
-        fecha TEXT NOT NULL,
-        FOREIGN KEY (cliente_id) REFERENCES clientes(id),
-        FOREIGN KEY (vestido_id) REFERENCES vestidos(id)
-    )
+        CREATE TABLE IF NOT EXISTS reservas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cliente_id INTEGER NOT NULL,
+            vestido_id INTEGER NOT NULL,
+            fecha TEXT NOT NULL,
+            estado TEXT NOT NULL DEFAULT 'Activa',
+            FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+            FOREIGN KEY (vestido_id) REFERENCES vestidos(id)
+        )
     """)
 
     conexion.commit()
@@ -74,6 +76,7 @@ def inicio():
         busqueda=busqueda
     )
 
+
 @app.route("/clientes", methods=["POST"])
 def registrar_cliente():
 
@@ -95,6 +98,7 @@ def registrar_cliente():
     conexion.close()
 
     return redirect("/")
+
 
 @app.route("/vestidos", methods=["GET", "POST"])
 def vestidos():
@@ -130,6 +134,7 @@ def vestidos():
         vestidos=vestidos
     )
 
+
 @app.route("/disponibilidad")
 def disponibilidad():
 
@@ -158,6 +163,7 @@ def disponibilidad():
         estado=estado
     )
 
+
 @app.route("/reservas", methods=["GET", "POST"])
 def reservas():
 
@@ -172,13 +178,15 @@ def reservas():
         conexion.execute(
             """
             INSERT INTO reservas
-            (cliente_id, vestido_id, fecha)
-            VALUES (?, ?, ?)
+            (cliente_id, vestido_id, fecha, estado)
+            VALUES (?, ?, ?, 'Activa')
             """,
             (cliente_id, vestido_id, fecha)
         )
 
         conexion.commit()
+
+    busqueda = request.args.get("busqueda", "")
 
     clientes = conexion.execute(
         "SELECT * FROM clientes"
@@ -188,16 +196,44 @@ def reservas():
         "SELECT * FROM vestidos WHERE estado = 'Disponible'"
     ).fetchall()
 
-    reservas = conexion.execute("""
-        SELECT
-            reservas.id,
-            clientes.nombre,
-            vestidos.nombre,
-            reservas.fecha
-        FROM reservas
-        JOIN clientes ON reservas.cliente_id = clientes.id
-        JOIN vestidos ON reservas.vestido_id = vestidos.id
-    """).fetchall()
+    if busqueda:
+
+        reservas = conexion.execute(
+            """
+            SELECT
+                reservas.id,
+                clientes.nombre,
+                vestidos.nombre,
+                reservas.fecha,
+                reservas.estado
+            FROM reservas
+            JOIN clientes
+                ON reservas.cliente_id = clientes.id
+            JOIN vestidos
+                ON reservas.vestido_id = vestidos.id
+            WHERE clientes.nombre LIKE ?
+            OR reservas.fecha LIKE ?
+            """,
+            (f"%{busqueda}%", f"%{busqueda}%")
+        ).fetchall()
+
+    else:
+
+        reservas = conexion.execute(
+            """
+            SELECT
+                reservas.id,
+                clientes.nombre,
+                vestidos.nombre,
+                reservas.fecha,
+                reservas.estado
+            FROM reservas
+            JOIN clientes
+                ON reservas.cliente_id = clientes.id
+            JOIN vestidos
+                ON reservas.vestido_id = vestidos.id
+            """
+        ).fetchall()
 
     conexion.close()
 
@@ -205,8 +241,11 @@ def reservas():
         "reservas.html",
         clientes=clientes,
         vestidos=vestidos,
-        reservas=reservas
+        reservas=reservas,
+        busqueda=busqueda
     )
+
+
 @app.route("/reservas/editar/<int:id>", methods=["GET", "POST"])
 def editar_reserva(id):
 
@@ -257,9 +296,27 @@ def editar_reserva(id):
         vestidos=vestidos
     )
 
-if __name__ == "__main__":
-    crear_tabla()
-    app.run(debug=True)
+
+@app.route("/reservas/cancelar/<int:id>", methods=["POST"])
+def cancelar_reserva(id):
+
+    conexion = conectar_db()
+
+    conexion.execute(
+        """
+        UPDATE reservas
+        SET estado = 'Cancelada'
+        WHERE id = ?
+        """,
+        (id,)
+    )
+
+    conexion.commit()
+    conexion.close()
+
+    return redirect("/reservas")
+
+
 if __name__ == "__main__":
     crear_tabla()
     app.run(debug=True)

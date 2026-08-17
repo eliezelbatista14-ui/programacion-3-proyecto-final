@@ -83,6 +83,7 @@
                 <th>Vestido</th>
                 <th>Fecha</th>
                 <th>Acciones</th>
+                <th>Estado</th>
             </tr>
 
         </thead>
@@ -96,12 +97,23 @@
                 <td>{{ reserva[1] }}</td>
                 <td>{{ reserva[2] }}</td>
                 <td>{{ reserva[3] }}</td>
+                <td>{{ reserva[4] }}</td>
             </tr>
 
             <td>
                 <a href="/reservas/editar/{{ reserva[0] }}">
                     Editar
                 </a>
+            </td>
+            <td>
+                <form
+                    action="/reservas/cancelar/{{ reserva[0] }}"
+                    method="POST"
+                >
+                    <button type="submit">
+                        Cancelar
+                    </button>
+                </form>
             </td>
 
             {% endfor %}
